@@ -130,6 +130,8 @@
             const marketReady = await waitForSelector('a.buy', 8000, 200);
             if (!marketReady) {
                 log('❌ Market not loaded—skipping buys');
+                returnHome();
+                sessionStorage.removeItem(FLIGHT_FLAG);
                 return;
             }
 
@@ -158,6 +160,8 @@
                 const marketReady = await waitForSelector('a.buy', 8000, 200);
                 if (!marketReady) {
                     log('❌ Market not loaded—skipping buys');
+                    returnHome();
+                    sessionStorage.removeItem(FLIGHT_FLAG);
                     return;
                 }
 
