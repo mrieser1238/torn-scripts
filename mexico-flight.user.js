@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Torn: Mexico Flight + Buy + Return (i-data Exact Match)
 // @namespace    https://github.com/YOUR-USERNAME/torn-scripts
-// @version      3.1
+// @version      3.2
 // @description  Flies to Mexico in Torn, buys Jaguar Plushie and Card Skimmer using strict i-data matching, then returns home
 // @author       YOUR NAME
 // @match        https://www.torn.com/*
@@ -11,14 +11,15 @@
 
 /*
  HOW TO USE:
- - Press Shift + M on any Torn page to begin the process.
- - The script will:
+ - Press **Shift + M** on any Torn page to fly to Mexico, buy the items and return home.
+ - Press **Shift + T** while already in the Mexico market to test buying the items only.
+ - The Shift+M sequence will:
      1. Click the Mexico map pin
      2. Travel to Mexico
      3. Wait for the market
      4. Buy Jaguar Plushie and Card Skimmer (strict match via i-data)
      5. Return home automatically
- - If page reloads mid-process, it will resume automatically.
+ - If the page reloads mid-process, it will resume automatically.
 */
 
 (function () {
@@ -99,6 +100,19 @@
         sessionStorage.removeItem(FLIGHT_FLAG);
     }
 
+    async function testMarketBuy() {
+        log('🧪 Test mode: buying items in current market...');
+        const marketReady = await waitForSelector('a.buy', 8000, 200);
+        if (!marketReady) {
+            log('❌ Market not loaded—cannot buy');
+            return;
+        }
+        for (const item of items) {
+            await buyItemByIData(item.idata, item.name);
+        }
+        log('✅ Test purchases complete');
+    }
+
     async function flyAndBuyMexico() {
         log('✈️ Starting Mexico flight...');
         const pin = document.querySelector('div.pin___FilUD.interactive___tB_xU');
@@ -145,8 +159,11 @@
     }
 
     document.addEventListener('keydown', e => {
-        if (e.shiftKey && e.key === 'M') {
+        if (!e.shiftKey) return;
+        if (e.key === 'M') {
             flyAndBuyMexico();
+        } else if (e.key === 'T') {
+            testMarketBuy();
         }
     });
 
